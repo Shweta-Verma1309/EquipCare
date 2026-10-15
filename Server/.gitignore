@@ -1,0 +1,13 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# .NET generated files
+bin/
+obj/
+
+# IDE
+.vs/
+.vscode/
+.idea/
