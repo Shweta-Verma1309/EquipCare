@@ -9,6 +9,7 @@ public class MaintenanceRecord
     public DateTime MaintenanceDate { get; set; }
     public string Findings { get; set; } = "";
     public string? ActionsTaken { get; set; }
+    public string? PartsUsed { get; set; }
     public decimal DowntimeHours { get; set; } = 0;
     public string? Remarks { get; set; }
 

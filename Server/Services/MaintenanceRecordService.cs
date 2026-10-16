@@ -40,6 +40,7 @@ public class MaintenanceRecordService : IMaintenanceRecordService
                 MaintenanceDate = r.MaintenanceDate,
                 Findings = r.Findings,
                 ActionsTaken = r.ActionsTaken,
+                PartsUsed = r.PartsUsed,
                 DowntimeHours = r.DowntimeHours,
                 Remarks = r.Remarks
             })
@@ -60,6 +61,7 @@ public class MaintenanceRecordService : IMaintenanceRecordService
                 MaintenanceDate = r.MaintenanceDate,
                 Findings = r.Findings,
                 ActionsTaken = r.ActionsTaken,
+                PartsUsed = r.PartsUsed,
                 DowntimeHours = r.DowntimeHours,
                 Remarks = r.Remarks
             })
@@ -99,6 +101,7 @@ public class MaintenanceRecordService : IMaintenanceRecordService
                 dto.MaintenanceDate, DateTimeKind.Utc),
             Findings = dto.Findings,
             ActionsTaken = dto.ActionsTaken,
+            PartsUsed = dto.PartsUsed,
             DowntimeHours = dto.DowntimeHours,
             Remarks = dto.Remarks
         };

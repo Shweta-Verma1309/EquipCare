@@ -228,6 +228,9 @@ namespace MaintenanceApi.Migrations
                     b.Property<DateTime>("MaintenanceDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("PartsUsed")
+                        .HasColumnType("text");
+
                     b.Property<string>("Remarks")
                         .HasColumnType("text");
 

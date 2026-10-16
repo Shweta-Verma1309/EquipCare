@@ -15,6 +15,8 @@ public class MaintenanceRecordCreateDto
 
     public string? Findings { get; set; }
 
+    public string? PartsUsed { get; set; }
+
     public string? ActionsTaken { get; set; }
 
     [Range(0, 100000)]

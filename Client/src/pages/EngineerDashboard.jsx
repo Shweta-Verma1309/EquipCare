@@ -154,7 +154,7 @@ export default function EngineerDashboard() {
     <>
       <div className="page-h">
         <div>
-          <h2>Good morning, {(user.fullName || 'Engineer').split(' ')[0]}</h2>
+          <h2>Welcome, {(user.fullName || 'Engineer').split(' ')[0]} !</h2>
           <p>Your assigned jobs, deadlines and next actions.</p>
         </div>
 

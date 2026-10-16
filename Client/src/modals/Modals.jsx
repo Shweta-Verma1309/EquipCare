@@ -199,6 +199,7 @@ function WoProgress({ id }) {
           workOrderId: Number(workOrder.workOrderId),
           maintenanceDate: new Date().toISOString(),
           findings: f.v.xf.trim(),
+          partsUsed: f.v.xa.trim(),
           actionsTaken: f.v.xp.trim(),
           downtimeHours: 0,
           remarks: f.v.xr.trim(),
@@ -302,6 +303,7 @@ function WoComplete({ id }) {
           workOrderId: Number(workOrder.workOrderId),
           maintenanceDate: new Date().toISOString(),
           findings: f.v.xf.trim(),
+          partsUsed: f.v.xa.trim(),
           actionsTaken: f.v.xp.trim(),
           downtimeHours: 0,
           remarks: [

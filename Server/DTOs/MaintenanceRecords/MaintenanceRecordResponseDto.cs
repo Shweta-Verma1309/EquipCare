@@ -15,6 +15,8 @@ public class MaintenanceRecordResponseDto
 
     public string? Findings { get; set; }
 
+    public string? PartsUsed { get; set; }
+
     public string? ActionsTaken { get; set; }
 
     public decimal DowntimeHours { get; set; }
