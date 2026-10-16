@@ -67,7 +67,7 @@ const u = {
   return (
     <div className={`app ${mgr ? '' : 'eng'}${S.menuOpen ? ' open' : ''}`}>
       <aside className="side" aria-label="Main navigation">
-        <button type="button" className="brand" onClick={() => navigate('')}><span className="mark">EM</span><span><b>EMMS</b><small>Equipment Maintenance</small></span></button>
+        <button type="button" className="brand" onClick={() => navigate('')}><span className="mark">EC</span><span><b>EquipCare</b><small>Equipment Maintenance</small></span></button>
         <nav className="nav">
           <div className="sec">{mgr ? 'Plant operations' : 'My workspace'}</div>
           {NAV.filter(n => mgr || n[0] !== 'users').map(n => (
@@ -83,7 +83,7 @@ const u = {
       <div className="main" style={{ minWidth: 0 }}>
         <header className="head">
           <button type="button" className="icon-btn menu-btn" onClick={() => { S.menuOpen = !S.menuOpen; emit(); }} aria-label="Open menu"><Icon name="menu" /></button>
-          <div className="ttl"><div className="crumb">EMMS / {mgr ? 'Manager' : 'Engineer'} / {title}</div><h1>{title}</h1></div>
+          <div className="ttl"><div className="crumb">EquipCare / {mgr ? 'Manager' : 'Engineer'} / {title}</div><h1>{title}</h1></div>
           <div className="tools">
             {mgr
               ? <div className="dept-sel"><span className="lbl">Dept</span><select id="deptSel" aria-label="Department" value={S.dept} onChange={onDept}><Opts list={['All Departments', ...DEPTS]} /></select></div>

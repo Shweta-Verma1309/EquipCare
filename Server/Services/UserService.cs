@@ -139,4 +139,17 @@ public class UserService : IUserService
         return true;
     }
 
+    public async Task<bool> ReactivateAsync(int id)
+{
+    var user = await _context.Users.FindAsync(id);
+
+    if (user == null)
+        return false;
+
+    user.IsActive = true;
+    await _context.SaveChangesAsync();
+
+    return true;
+}
+
 }

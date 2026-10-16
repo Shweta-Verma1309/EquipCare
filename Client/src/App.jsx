@@ -46,11 +46,11 @@ export default function App() {
     document.addEventListener('keydown', h); return () => document.removeEventListener('keydown', h);
   }, []);
 
-  let body = null, title = 'EMMS Maintenance Console';
+  let body = null, title = 'EquipCare Maintenance Console';
   if (route === '') body = <Landing />;
-  else if (route === 'login') { body = <Login />; title = 'Sign in · EMMS'; }
+  else if (route === 'login') { body = <Login />; title = 'Sign in · EquipCare'; }
   else if (valid && mine && role === mine) {
-    const [t, Page] = PAGES[role][page]; title = `${t} · EMMS Maintenance Console`;
+    const [t, Page] = PAGES[role][page]; title = `${t} · EquipCare Maintenance Console`;
     body = <AppShell role={role} page={page} title={t}><Page /></AppShell>;
   }
   useEffect(() => { document.title = title; }, [title]);

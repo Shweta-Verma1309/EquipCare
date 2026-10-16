@@ -56,7 +56,7 @@ function DeptArt({ k }) {
 export function Brand({ onClick, plain }) {
   return (
     <button type="button" className="brand" onClick={onClick} style={plain ? { padding: 0 } : undefined}>
-      <span className="mark">EM</span><span><b>EMMS</b><small>Equipment Maintenance</small></span>
+      <span className="mark">EC</span><span><b>EquipCare</b><small>Equipment Maintenance</small></span>
     </button>
   );
 }
@@ -117,7 +117,7 @@ export default function Landing() {
       </section>
       <section className="psec wrap" id="departments" style={{ paddingTop: 20 }}>
         <h2>Three departments, one maintenance picture</h2>
-        <p className="sub">Each department has its own equipment, engineers and failure modes. EMMS keeps them comparable.</p>
+        <p className="sub">Each department has its own equipment, engineers and failure modes. EquipCare keeps them comparable.</p>
         <div className="grid g3">
           {DEPTS.map(d => { const ms = MACHINES.filter(m => m.dept === d); return (
             <div className="card dcard" key={d}>
@@ -130,7 +130,7 @@ export default function Landing() {
       <footer className="pfoot wrap">
         <div className="cols">
           <div style={{ maxWidth: 380 }}>
-            <div className="brand" style={{ padding: '0 0 10px', cursor: 'default' }}><span className="mark">EM</span><span><b>EMMS</b></span></div>
+            <div className="brand" style={{ padding: '0 0 10px', cursor: 'default' }}><span className="mark">EM</span><span><b>EquipCare</b></span></div>
             <p>Smart Equipment Maintenance Management System for aluminium manufacturing: equipment health, preventive maintenance and breakdown control.</p>
           </div>
           <div><b style={{ color: '#fff' }}>Product</b>
@@ -141,7 +141,7 @@ export default function Landing() {
             </div>
           </div>
         </div>
-        <div className="cp">© 2026 EMMS. UI/UX prototype with fictional demonstration data.</div>
+        <div className="cp">© 2026 EquipCare. UI/UX prototype with fictional demonstration data.</div>
       </footer>
     </div>
   );

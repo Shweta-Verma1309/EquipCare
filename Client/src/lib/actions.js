@@ -91,10 +91,36 @@ export const userSave = (id, d) => {
   if (id) { Object.assign(U(id), d); logAct('update', `User ${d.name} updated.`); done(`${d.name} updated.`); }
   else { const nid = 'U-' + String(Math.max(...USERS.map(x => +x.id.slice(2))) + 1).padStart(3, '0'); USERS.push({ id: nid, last: nowISO(), phone: '+91 00000 1' + nid.slice(2) + '0', ...d }); logAct('create', `User account ${d.name} created.`); done(`${d.name} added (${nid}).`); }
 };
-export const userToggle = id => {
-  const u = U(id); if (u.id === 'U-001') { toast('You cannot deactivate your own account.', 'err'); return; }
-  u.status = u.status === 'Active' ? 'Inactive' : 'Active'; const open = WOS.filter(w => w.eng === u.id && ['Scheduled', 'In Progress', 'On Hold'].includes(w.status)).length;
-  logAct('update', `Account ${u.name} set ${u.status}.`); emit(); toast(`${u.name} is now ${u.status}.${u.status === 'Inactive' && open ? ` ${open} open work order(s) are still assigned to them.` : ''}`);
+export const userToggle = async (id, isActive) => {
+  const storedUser =
+    JSON.parse(localStorage.getItem('emms_user') || 'null') ||
+    JSON.parse(sessionStorage.getItem('emms_user') || 'null');
+
+  const currentUserId = Number(storedUser?.userId ?? storedUser?.id);
+
+  if (currentUserId && currentUserId === Number(id) && isActive) {
+    toast('You cannot deactivate your own account.', 'err');
+    return false;
+  }
+
+  try {
+    const endpoint = isActive
+      ? `/users/${id}/deactivate`
+      : `/users/${id}/reactivate`;
+
+    await apiRequest(endpoint, { method: 'PATCH' });
+
+    toast(
+      isActive ? 'User deactivated successfully.' : 'User reactivated successfully.',
+      'ok'
+    );
+
+    window.dispatchEvent(new Event('emms:users-refresh'));
+    return true;
+  } catch (error) {
+    toast(error.message || 'Could not update user status.', 'err');
+    return false;
+  }
 };
 export const userSet = (id, key, val, label) => { const u = U(id); u[key] = val; logAct('update', `${u.name}: ${label.toLowerCase()} set to ${val}.`); done(`${u.name}: ${label.toLowerCase()} updated.`); };
 

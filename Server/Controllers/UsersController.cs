@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MaintenanceApi.Controllers;
 
-// [Authorize(Roles = "Manager")]
+[Authorize(Roles = "Manager")]
 [ApiController]
 [Route("api/users")]
 public class UsersController : ControllerBase
@@ -104,5 +104,16 @@ public class UsersController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPatch("{id:int}/reactivate")]
+public async Task<IActionResult> Reactivate(int id)
+{
+    var success = await _service.ReactivateAsync(id);
+
+    if (!success)
+        return NotFound(new { message = "User not found." });
+
+    return NoContent();
+}
 
 }
