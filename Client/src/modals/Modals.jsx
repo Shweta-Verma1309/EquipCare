@@ -27,35 +27,224 @@ function Profile() {
 }
 
 /* ---------- machines ---------- */
+
 function MachineForm({ id }) {
-  const m = id ? M(id) : { id: '', name: '', dept: DEPTS[0], cat: CATS[0], loc: '', mfr: '', model: '', inst: '', status: 'Operational', freq: 30, eng: engs(true)[0].id };
-  const f = useForm({ ...m, freq: String(m.freq) });
-  const save = () => {
-    if (!f.validate(['id', 'name', 'loc', 'mfr', 'model', 'inst', 'freq'])) return;
-    const nid = f.v.id.trim().toUpperCase();
-    if (!id && M(nid)) { f.setErr({ id: 'This Machine ID already exists.' }); return; }
-    const d = { id: id || nid, name: f.v.name.trim(), dept: f.v.dept, cat: f.v.cat, loc: f.v.loc.trim(), mfr: f.v.mfr.trim(), model: f.v.model.trim(), inst: f.v.inst, status: f.v.status, freq: +f.v.freq, eng: f.v.eng };
-    A.machineSave(id, d);
-  };
+  const [departments, setDepartments] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  const [values, setValues] = useState({
+    id: '',
+    name: '',
+    dept: '',
+    cat: '',
+    loc: '',
+    mfr: '',
+    model: '',
+    inst: '',
+    status: 'Operational',
+    freq: '30',
+    eng: '',
+  });
+
+  const f = useForm(values);
   const e = f.err;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadOptions() {
+      setLoadingOptions(true);
+      setLoadError('');
+
+      try {
+        const [deptData, categoryData] = await Promise.all([
+          apiRequest('/departments'),
+          apiRequest('/machinecategories'),
+        ]);
+
+        if (!Array.isArray(deptData) || !Array.isArray(categoryData)) {
+          throw new Error('Unexpected department or category API response.');
+        }
+
+        if (cancelled) return;
+
+        setDepartments(deptData);
+        setCategories(categoryData);
+
+        if (!id) {
+          setValues(v => ({
+            ...v,
+            dept: String(deptData[0]?.departmentId ?? ''),
+            cat: String(categoryData[0]?.machineCategoryId ?? ''),
+          }));
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError(error.message || 'Could not load departments and categories.');
+        }
+      } finally {
+        if (!cancelled) setLoadingOptions(false);
+      }
+    }
+
+    loadOptions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const save = async () => {
+    if (saving || loadingOptions) return;
+
+    if (!f.validate(['id', 'name', 'loc', 'mfr', 'model', 'inst', 'freq'])) {
+      return;
+    }
+
+    if (!f.v.dept || !f.v.cat) {
+      toast('Please select a department and category.', 'err');
+      return;
+    }
+
+    const assetCode = f.v.id.trim().toUpperCase();
+
+    const body = {
+      assetCode,
+      machineName: f.v.name.trim(),
+      departmentId: Number(f.v.dept),
+      machineCategoryId: Number(f.v.cat),
+      manufacturer: f.v.mfr.trim(),
+      modelNumber: f.v.model.trim(),
+      installationDate: f.v.inst || null,
+      currentStatus: f.v.status,
+      criticality: 'Medium',
+      location: f.v.loc.trim(),
+    };
+
+    setSaving(true);
+
+    try {
+      if (id) {
+        throw new Error(
+          'Editing machines is not connected in this form yet. Add a new machine instead.'
+        );
+      }
+
+      await apiRequest('/machines', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+
+      toast('Machine added successfully.', 'ok');
+      closeModal();
+      emit();
+      window.dispatchEvent(new Event('emms:machines-refresh'));
+      window.dispatchEvent(new Event('emms:refresh'));
+    } catch (error) {
+      toast(error.message || 'Could not save machine.', 'err');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <Modal title={id ? 'Edit machine' : 'Add machine'} footer={<><CancelBtn /><button type="button" className="btn primary" onClick={save}>{id ? 'Save changes' : 'Add machine'}</button></>}>
-      <div className="form-grid">
-        <Field id="id" label="Machine ID" error={e.id}><input className="inp" {...f.bind('id')} readOnly={!!id} placeholder="e.g. CP-MTR-002" /></Field>
-        <Field id="name" label="Machine name" error={e.name}><input className="inp" {...f.bind('name')} /></Field>
-        <Field id="dept" label="Department"><select className="inp" {...f.bind('dept')}><Opts list={DEPTS} /></select></Field>
-        <Field id="cat" label="Category"><select className="inp" {...f.bind('cat')}><Opts list={CATS} /></select></Field>
-        <Field id="loc" label="Location" error={e.loc}><input className="inp" {...f.bind('loc')} /></Field>
-        <Field id="mfr" label="Manufacturer" error={e.mfr}><input className="inp" {...f.bind('mfr')} /></Field>
-        <Field id="model" label="Model number" error={e.model}><input className="inp" {...f.bind('model')} /></Field>
-        <Field id="inst" label="Installation date" error={e.inst}><input className="inp" type="date" {...f.bind('inst')} /></Field>
-        <Field id="status" label="Operational status"><select className="inp" {...f.bind('status')}><Opts list={MSTAT} /></select></Field>
-        <Field id="freq" label="Maintenance frequency (days)" error={e.freq}><input className="inp" type="number" min="1" {...f.bind('freq')} /></Field>
-        <Field id="eng" label="Assigned engineer" full><select className="inp" {...f.bind('eng')}><Opts list={engs(true).map(u => [u.id, `${u.name} (${u.dept})`])} /></select></Field>
-      </div>
+    <Modal
+      title={id ? 'Edit machine' : 'Add machine'}
+      footer={
+        <>
+          <CancelBtn />
+          <button
+            type="button"
+            className="btn primary"
+            onClick={save}
+            disabled={saving || loadingOptions || !!loadError}
+          >
+            {saving ? 'Saving...' : id ? 'Save changes' : 'Add machine'}
+          </button>
+        </>
+      }
+    >
+      {loadingOptions && <p className="muted">Loading departments and categories...</p>}
+
+      {loadError && (
+        <div className="note t-error" role="alert">
+          {loadError}
+        </div>
+      )}
+
+      {!loadingOptions && !loadError && (
+        <div className="form-grid">
+          <Field id="id" label="Machine ID" error={e.id}>
+            <input className="inp" {...f.bind('id')} placeholder="e.g. CP-MTR-007" />
+          </Field>
+
+          <Field id="name" label="Machine name" error={e.name}>
+            <input className="inp" {...f.bind('name')} />
+          </Field>
+
+          <Field id="dept" label="Department">
+            <select className="inp" {...f.bind('dept')}>
+              {departments.map(d => (
+                <option key={d.departmentId} value={String(d.departmentId)}>
+                  {d.departmentName}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field id="cat" label="Category">
+            <select className="inp" {...f.bind('cat')}>
+              {categories.map(c => (
+                <option key={c.machineCategoryId} value={String(c.machineCategoryId)}>
+                  {c.categoryName}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field id="loc" label="Location" error={e.loc}>
+            <input className="inp" {...f.bind('loc')} />
+          </Field>
+
+          <Field id="mfr" label="Manufacturer" error={e.mfr}>
+            <input className="inp" {...f.bind('mfr')} />
+          </Field>
+
+          <Field id="model" label="Model number" error={e.model}>
+            <input className="inp" {...f.bind('model')} />
+          </Field>
+
+          <Field id="inst" label="Installation date" error={e.inst}>
+            <input className="inp" type="date" {...f.bind('inst')} />
+          </Field>
+
+          <Field id="status" label="Operational status">
+            <select className="inp" {...f.bind('status')}>
+              <Opts list={MSTAT} />
+            </select>
+          </Field>
+
+          <Field id="freq" label="Maintenance frequency (days)" error={e.freq}>
+            <input className="inp" type="number" min="1" {...f.bind('freq')} />
+          </Field>
+
+          <Field id="eng" label="Assigned engineer" full>
+            <select className="inp" {...f.bind('eng')}>
+              <option value="">Not assigned</option>
+            </select>
+            <p className="muted">
+              Engineer assignment is not included in the current MachineCreateDto.
+            </p>
+          </Field>
+        </div>
+      )}
     </Modal>
   );
 }
+
 
 /* ---------- schedule maintenance ---------- */
 function Schedule({ mid, type, prio, desc, bd }) {
