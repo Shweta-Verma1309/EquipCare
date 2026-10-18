@@ -4,11 +4,14 @@ import { Icon, Badge, Kpi, EmptyState, MBadge, PBadge, WBadge, stop } from '../c
 import ChartCanvas, { cssVar } from '../components/ChartCanvas';
 import { S, emit, navigate, openDrawer, openModal } from '../lib/store';
 import { M, uname, wDept, bDept, isOverdue, bdActive, bdHours, lastMaint, nextMaint, mWarn, mBds, inDept, countBy, fmtDate, fmtDT, fmtShort, nowISO, hrs, sevCls, sevIcon } from '../lib/model';
+import { useState } from 'react';
+import Chatbot from '../components/Chatbot';
 
 const ACT_CLS = { create: 't-info', assign: 't-info', done: 't-ok', breakdown: 't-crit', update: 't-warn' };
 const ACT_ICO = { create: 'plus', assign: 'users', done: 'checkc', breakdown: 'alert', update: 'wrench' };
 
 export default function ManagerDashboard() {
+  const [chatOpen, setChatOpen] = useState(false);
   const dept = S.dept, ind = d => inDept(dept, d);
   const ms = MACHINES.filter(m => ind(m.dept)), ws = WOS.filter(w => ind(wDept(w))), bs = BDS.filter(b => ind(bDept(b)));
   const horizon = new Date(NOW.getTime() + 7 * 864e5);
@@ -149,6 +152,18 @@ export default function ManagerDashboard() {
           </div>
         </div>
       </div>
+      <button
+        type="button"
+        className="chat-launcher"
+        onClick={() => setChatOpen(true)}
+        aria-label="Open AI assistant"
+      >
+        <span>✦</span> Ask AI
+      </button>
+
+      {chatOpen && (
+        <Chatbot onClose={() => setChatOpen(false)} />
+      )}
     </>
   );
 }

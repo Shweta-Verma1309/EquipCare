@@ -64,7 +64,7 @@ export function Brand({ onClick, plain }) {
 }
 
 export default function Landing() {
-  const [chatOpen, setChatOpen] = useState(false);
+  // const [chatOpen, setChatOpen] = useState(false);
   const ops = MACHINES.filter(m => m.status === 'Operational').length;
   const od = WOS.filter(isOverdue).length, ab = BDS.filter(bdActive);
   return (
@@ -150,7 +150,7 @@ export default function Landing() {
         </div>
         <div className="cp">© 2026 EquipCare. UI/UX prototype with fictional demonstration data.</div>
       </footer>
-      <button
+      {/* <button
         type="button"
         className="chat-launcher"
         onClick={() => setChatOpen(true)}
@@ -161,7 +161,7 @@ export default function Landing() {
 
       {chatOpen && (
         <Chatbot onClose={() => setChatOpen(false)} />
-      )}
+      )} */}
     </div>
   );
 }

@@ -23,10 +23,22 @@ public class ChatController : ControllerBase
         [FromBody] ChatRequestDto request,
         CancellationToken cancellationToken)
     {
-        var response = await _chatService.AskAsync(
-            request,
-            cancellationToken);
+        try
+        {
+            var response = await _chatService.AskAsync(
+                request, cancellationToken);
 
-        return Ok(response);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+
+            return StatusCode(500, new
+            {
+                message = "Chatbot request failed.",
+                error = ex.Message
+            });
+        }
     }
 }
