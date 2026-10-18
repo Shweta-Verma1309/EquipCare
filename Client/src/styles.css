@@ -325,3 +325,37 @@ button.li:hover{background:var(--hover)}
 .pw{position:relative}.pw button{position:absolute;right:4px;top:3px;height:32px;width:34px;border:none;background:none;cursor:pointer;color:var(--muted)}
 .demo-tag{font-family:var(--font-m);font-size:11px;background:var(--warn-bg);color:var(--warn);padding:2px 8px;border-radius:5px;letter-spacing:.04em}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+
+.chat-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 20px;
+  color: white;
+  background: #142b45;
+  border: 0;
+  border-radius: 30px;
+  box-shadow: 0 6px 20px rgba(20, 43, 69, 0.3);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chat-launcher span {
+  font-size: 20px;
+}
+
+.chat-launcher:hover {
+  background: #315a7d;
+}
+
+@media (max-width: 480px) {
+  .chat-launcher {
+    right: 16px;
+    bottom: 16px;
+  }
+}

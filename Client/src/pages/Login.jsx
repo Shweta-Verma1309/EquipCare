@@ -62,7 +62,7 @@ export default function Login() {
           password: pass,
         }),
       });
-
+      console.log('Login response:', data);
       if (!data?.token) {
         throw new Error(
           'The server did not return an authentication token.'

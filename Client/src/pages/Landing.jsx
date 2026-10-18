@@ -3,6 +3,8 @@ import { MACHINES, WOS, BDS, DEPTS } from '../data/data';
 import { Icon, Badge } from '../components/ui';
 import { navigate } from '../lib/store';
 import { bDept, bdActive, bdHours, isOverdue } from '../lib/model';
+import { useState } from 'react';
+import Chatbot from '../components/Chatbot';
 
 const DEPT_INFO = {
   'Carbon Plant': { art: 'carbon', text: 'Raw coke handling, anode paste mixing, forming and baking. Conveyors, crushers and mixers run continuously and drive anode quality.' },
@@ -62,6 +64,7 @@ export function Brand({ onClick, plain }) {
 }
 
 export default function Landing() {
+  const [chatOpen, setChatOpen] = useState(false);
   const ops = MACHINES.filter(m => m.status === 'Operational').length;
   const od = WOS.filter(isOverdue).length, ab = BDS.filter(bdActive);
   return (
@@ -95,12 +98,14 @@ export default function Landing() {
             </div>
             <div className="row2">
               <div className="pc"><h5>Downtime by department (h)</h5>
-                {DEPTS.map((d, i) => { const h = BDS.filter(b => bDept(b) === d).reduce((a, b) => a + bdHours(b), 0); return (
-                  <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '6px 0' }}>
-                    <span style={{ width: 78, color: '#5E6B7A' }}>{d}</span>
-                    <span style={{ flex: 1, background: '#EBEFF3', borderRadius: 4, height: 10 }}><i style={{ display: 'block', height: 10, borderRadius: 4, width: `${Math.min(100, h * 2.2)}%`, background: ['#315A7D', '#142B45', '#A9B4C0'][i] }} /></span>
-                    <b className="num">{h.toFixed(1)}</b>
-                  </div>); })}
+                {DEPTS.map((d, i) => {
+                  const h = BDS.filter(b => bDept(b) === d).reduce((a, b) => a + bdHours(b), 0); return (
+                    <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '6px 0' }}>
+                      <span style={{ width: 78, color: '#5E6B7A' }}>{d}</span>
+                      <span style={{ flex: 1, background: '#EBEFF3', borderRadius: 4, height: 10 }}><i style={{ display: 'block', height: 10, borderRadius: 4, width: `${Math.min(100, h * 2.2)}%`, background: ['#315A7D', '#142B45', '#A9B4C0'][i] }} /></span>
+                      <b className="num">{h.toFixed(1)}</b>
+                    </div>);
+                })}
               </div>
               <div className="pc"><h5>Needs attention</h5>
                 {ab.slice(0, 3).map(b => <div className="pr" key={b.id}><span className="mono" style={{ fontSize: 11 }}>{b.mid}</span><span style={{ color: '#BF2B2B', fontWeight: 600 }}>{b.severity}</span></div>)}
@@ -119,12 +124,14 @@ export default function Landing() {
         <h2>Three departments, one maintenance picture</h2>
         <p className="sub">Each department has its own equipment, engineers and failure modes. EquipCare keeps them comparable.</p>
         <div className="grid g3">
-          {DEPTS.map(d => { const ms = MACHINES.filter(m => m.dept === d); return (
-            <div className="card dcard" key={d}>
-              <div className="art"><DeptArt k={DEPT_INFO[d].art} /></div>
-              <div className="b"><h3 style={{ fontSize: 21 }}>{d}</h3><p className="muted">{DEPT_INFO[d].text}</p>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}><Badge cls="b-info" flat>{ms.length} machines</Badge><Badge cls="b-ok" flat>{ms.filter(m => m.status === 'Operational').length} operational</Badge></div></div>
-            </div>); })}
+          {DEPTS.map(d => {
+            const ms = MACHINES.filter(m => m.dept === d); return (
+              <div className="card dcard" key={d}>
+                <div className="art"><DeptArt k={DEPT_INFO[d].art} /></div>
+                <div className="b"><h3 style={{ fontSize: 21 }}>{d}</h3><p className="muted">{DEPT_INFO[d].text}</p>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}><Badge cls="b-info" flat>{ms.length} machines</Badge><Badge cls="b-ok" flat>{ms.filter(m => m.status === 'Operational').length} operational</Badge></div></div>
+              </div>);
+          })}
         </div>
       </section>
       <footer className="pfoot wrap">
@@ -143,6 +150,18 @@ export default function Landing() {
         </div>
         <div className="cp">© 2026 EquipCare. UI/UX prototype with fictional demonstration data.</div>
       </footer>
+      <button
+        type="button"
+        className="chat-launcher"
+        onClick={() => setChatOpen(true)}
+        aria-label="Open AI assistant"
+      >
+        <span>✦</span> Ask AI
+      </button>
+
+      {chatOpen && (
+        <Chatbot onClose={() => setChatOpen(false)} />
+      )}
     </div>
   );
 }
